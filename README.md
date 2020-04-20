@@ -36,7 +36,7 @@ Adding a new Country
 
 If you plan on training OCR for a completely new country, you will first need
 to configure the dimensions of the plate and characters.  Add a new file in
-runtime_data/config/ with your country's 2-digit code.  You can copy and paste
+```runtime_data/config/``` with your country's 2-digit code.  You can copy and paste
 a section from another country (e.g., us or eu).  
 
 You should tweak the following values:
@@ -116,12 +116,12 @@ repo) is helpful for quickly cropping large numbers of images.  Save them as
 png files.
 
 Each file should be prefaced with a two character identifier for the
-font/region.  For example, for Maryland plates, we would name the file:
-*md*plate1.png
+font/region.  For example, for NSW plates, we would name the file:
+*ns*plate1.png
 
 ```
 mogrify -format png *jpg     
-for f in `ls`; do mv $f nsw_$f ; done 
+for f in `ls`; do mv $f ns$f ; done 
 ```
 
 Create an empty output directory.
@@ -130,7 +130,7 @@ To start classifying characters, use the classifychars utility program included
 in OpenALPR.
 
 Execute the command:
-'''  classifychars [country] [input image directory] [empty output directory]'''
+```openalpr-utils-classifychars [country] [input image directory] [empty output directory]```
 
 A GUI will open up and analyze each license plate image in your input folder.
 The steps to classify each plate are:
@@ -178,9 +178,9 @@ through the directory to make sure that the classifications match the images.
 Each image filename should be prefaced with the character that it represents.
 Once you've done this, it's time to create a training sheet.
 
-The "openalpr-utils-prepcharsfortraining" utility program in OpenALPR will
+The ```openalpr-utils-prepcharsfortraining``` utility program in OpenALPR will
 create the Tesseract training sheet for you.  Execute the following command:
-openalpr-utils-prepcharsfortraining [output directory from above]
+```openalpr-utils-prepcharsfortraining``` [output directory from above]
 
 The output will be:
   - combined.box
