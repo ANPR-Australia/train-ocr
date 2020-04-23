@@ -5,14 +5,8 @@ import glob
 import sys
 
 
-TESSERACT_DIR='/storage/projects/alpr/libraries/tesseract-ocr'
-
 os.environ["TESSDATA_PREFIX"] = TESSERACT_DIR
 #os.system("export TESSDATA_PREFIX=" + TESSERACT_DIR)
-
-TESSERACT_BIN=TESSERACT_DIR + '/tesseract'
-TESSERACT_TRAINDIR= TESSERACT_DIR + '/training'
-
 
 country = raw_input("Two-Letter Country Code to Train: ").lower()
 
@@ -36,7 +30,7 @@ for box_file in box_files:
 
     tif_file = input_dir + '/' + file_without_ext + ".tif"
 
-    train_cmd = "%s -l eng %s %s nobatch box.train.stderr" % (TESSERACT_BIN, tif_file, file_without_ext)
+    train_cmd = "tesseract -l eng %s %s nobatch box.train.stderr" % (tif_file, file_without_ext)
     print "Executing: " + train_cmd 
     os.system(train_cmd)
     os.system("mv ./" + file_without_ext + ".tr ./tmp/" + file_without_ext + ".tr")
@@ -47,16 +41,16 @@ for box_file in box_files:
 
 font_properties_file.close()
 
-os.system(TESSERACT_TRAINDIR + "/unicharset_extractor ./" + country + "/input/*.box")
+os.system("unicharset_extractor ./" + country + "/input/*.box")
 #os.system('mv ./unicharset ./" + country + "/input/" + LANGUAGE_NAME + ".unicharset')
 
 # Shape clustering should currently only be used for the "indic" languages
-#train_cmd = TESSERACT_TRAINDIR + '/shapeclustering -F ./' + country + '/input/font_properties -U unicharset ./' + country + '/input/*.tr'
+#train_cmd = 'shapeclustering -F ./' + country + '/input/font_properties -U unicharset ./' + country + '/input/*.tr'
 #print "Executing: " + train_cmd
 #os.system(train_cmd)
 
 
-train_cmd = TESSERACT_TRAINDIR + '/mftraining -F ./tmp/font_properties -U unicharset -O ./tmp/' + LANGUAGE_NAME + '.unicharset ./tmp/*.tr'
+train_cmd = 'mftraining -F ./tmp/font_properties -U unicharset -O ./tmp/' + LANGUAGE_NAME + '.unicharset ./tmp/*.tr'
 print "Executing: " + train_cmd
 os.system(train_cmd)
 os.system("rm ./unicharset")
@@ -64,7 +58,7 @@ os.system("mv ./tmp/" + LANGUAGE_NAME + ".unicharset ./")
 os.system("cp ./" + country + "/input/unicharambigs ./" + LANGUAGE_NAME + ".unicharambigs")
 
 
-os.system(TESSERACT_TRAINDIR + '/cntraining ./tmp/*.tr')
+os.system('cntraining ./tmp/*.tr')
 
 #os.system("mv ./unicharset ./" + LANGUAGE_NAME + ".unicharset")
 os.system("mv ./shapetable ./" + LANGUAGE_NAME + ".shapetable")
@@ -74,14 +68,14 @@ os.system("mv ./inttemp ./" + LANGUAGE_NAME + ".inttemp")
 os.system("mv ./normproto ./" + LANGUAGE_NAME + ".normproto")
 
 
-os.system(TESSERACT_TRAINDIR + '/combine_tessdata ' + LANGUAGE_NAME + '.')
+os.system('combine_tessdata ' + LANGUAGE_NAME + '.')
 
 # If a config file is in the country's directory, use that.
 config_file = os.path.join('./', country, country + '.config')
 if os.path.isfile(config_file):
     print "Applying config file: " + config_file
     trainedata_file = LANGUAGE_NAME + '.traineddata'
-    os.system(TESSERACT_TRAINDIR + '/combine_tessdata -o ' + trainedata_file + ' ' + config_file )
+    os.system('combine_tessdata -o ' + trainedata_file + ' ' + config_file )
 
 os.system("mv ./" + LANGUAGE_NAME + ".unicharset ./tmp/")
 os.system("mv ./" + LANGUAGE_NAME + ".shapetable ./tmp/")
